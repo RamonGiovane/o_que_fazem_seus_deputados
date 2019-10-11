@@ -3,20 +3,22 @@ span{
     background-color: red;
 }*/
 
+
+#barra_de_pesquisa{
+    background-color: white;
+    width: 100% !important;
+}
 .item_lista{
     width: 20 px;
     height: 20 px;
-    background-color: greenyellow;
     border: 5 px, black;
 }
 
 .nome_deputado{
-    background-color: blue;
     text-align: left;
 }
 
 
 .nome_partido{
-    background-color: red;
     text-align: right;
 }

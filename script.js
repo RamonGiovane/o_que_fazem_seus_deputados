@@ -9,30 +9,40 @@ btn_pesquisar.onclick = function (){
 var req_lista_deputados = new XMLHttpRequest();
 req_lista_deputados.onloadend = function(){
     response = req_lista_deputados.responseText;
-    console.log(this.response);
-    appendData(JSON.parse(this.response));
+    
+    listarDeputados(JSON.parse(this.response));
     
 }
 req_lista_deputados.open('GET', 'https://dadosabertos.camara.leg.br/api/v2/deputados', true)
 req_lista_deputados.send();
 
 
-function appendData(data_json) {
+function listarDeputados(data_json) {
 
+    /*Temporary shit*/
+    lista_deputados.appendChild(document.createElement("br"));
+    lista_deputados.appendChild(document.createElement("br"));
+    /**/
+    
     for (var i = 0; i < data_json.dados.length; i++) {
       var div = document.createElement("div");
-      var span1 = document.createElement("span");
-      var span2 = document.createElement("span");
-      div.className = "item_lista";
-      
+      var div2 = document.createElement("div");
+      var span1 = document.createElement("div");
+      var span2 = document.createElement("div");
+      div.className = "card";
+      div2.className = "card-body"
+
       span1.className = "nome_deputado";
       span2.className = "nome_partido";
       
       span1.innerHTML = data_json.dados[i].nome;
       span2.innerHTML = data_json.dados[i].siglaPartido;
       
-      div.appendChild(span1);
-      div.appendChild(span2);
+      div2.appendChild(span1);
+      div2.appendChild(span2);
+
+      div.appendChild(div2);
+      
       lista_deputados.appendChild(div);
     }
   }
