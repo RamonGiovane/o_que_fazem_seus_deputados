@@ -20,6 +20,8 @@
 
     <!-- Theme CSS - Includes Bootstrap -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 
 <body id="page-top">
@@ -28,7 +30,8 @@
             <div class="col-10 mb">
                 <input class="form-control" id="campo_de_pesquisa" placeholder="Insira o nome de um deputado">
             </div>
-                <button id="btn_pesquisar" type="button" class="btn btn-outline-primary btn-md">Pesquisar</button>
+                <button id="btn_pesquisar" type="button" class="btn btn-outline-primary dropdown-toggle btn-md">Filtrar por Deputado
+                </button>
             
         </div>
     </nav>
@@ -38,6 +41,8 @@
 
     <div id="lista_de_deputados" class="container"> </div>
     
+    <script src="requests.js"></script>
     <script src="script.js"></script>
+    
 </body>
 </html>

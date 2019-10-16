@@ -11,14 +11,64 @@ span{
 .item_lista{
     width: 20 px;
     height: 20 px;
-    border: 5 px, black;
 }
-
-.nome_deputado{
-    text-align: left;
+.span_info{
+    display: inline-block;
 }
-
-
 .nome_partido{
     text-align: right;
 }
+
+i{
+    color: dimgrey;
+    margin-left: 20px;
+}
+
+.card{
+    margin-top: 5px;
+    display: block;
+}
+
+#btn-dep{
+    display: block !important;
+}
+#card-dep{
+    display: block !important;
+}
+span{
+    display: block !important;
+    margin-bottom: -20px !important;
+    margin-top: -20px !important;
+}
+
+.card-body{
+    margin: 0 10px;
+}
+
+/* Style the button that is used to open and close the collapsible content */
+.card {
+    
+   /* background-color: #eee;
+    color: #444;
+    cursor: pointer;
+    padding: 18px;
+    width: 100%;
+    border: none;
+    text-align: left;
+    outline: none;
+    font-size: 15px;*/
+    transition: 0.4s;
+    margin: 15px 10px;
+    padding: 20px;
+  }
+    
+  /* Style the collapsible content. Note: hidden by default */
+  .conteudo-card {
+    padding: 0 18px;
+    display: none;
+    overflow: hidden;
+  }
+
+  table{
+    margin-top: 5px;
+  }
