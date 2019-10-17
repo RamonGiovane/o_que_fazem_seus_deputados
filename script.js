@@ -42,7 +42,11 @@ function listarDeputados(json_data) {
     lista_deputados.appendChild(document.createElement("br"));
     /**/
     
-    for (let i = 0; i < data.length; i++) {
+    for (let i = 0; i < data.length; i++) 
+    {
+      
+      despesas[data[i].id] = obterDespesas(data[i].id)
+
       let card = document.createElement("div");
       let cardBody = document.createElement("div");
       let nome = document.createElement("card");

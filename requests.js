@@ -46,13 +46,40 @@ function obterDespesas(idDeputado, ano=2019){
     //let verbaGabinete = obterVerbaGabinete(idDeputado, ano); 
 }
 
-function obterCotaParlamentar(idDeputado, ano){
-    //console.log(getURLVerbaGabinete(idDeputado,ano))
-   proxyRequest(getURLCotaParlamentar(idDeputado,ano)).then(html =>{
-    console.log(html);
-});
+function formatNumber(str_number){
+  str_number = str_number.trim().replace("R$", "");
+  str_number = str_number.replace(".", "");
+  str_number = str_number.replace(",", ".");
+  return parseFloat(str_number);
 }
 
+function obterCotaParlamentar(idDeputado, ano){
+    //console.log(getURLVerbaGabinete(idDeputado,ano))
+    proxyRequest(getURLCotaParlamentar(idDeputado,ano)).then(html =>{
+    
+    let doc = htmlToDOM(html);
+    
+    //Obtendo as verbas de todos os meses
+    console.log(doc.getElementById("totalFinalAgregado").textContent)
+    let totalGasto = formatNumber(doc.getElementById("totalFinalAgregado").textContent);
+    
+    //Contém o número de meses em que as cotas foram registradas no ano (-2 está retirando duas tags que não fazem parte da soma)
+    let meses = doc.getElementsByClassName("numerico").length - 2; 
+    console.log( {"cota-parlamentar" : {"total-gasto" : totalGasto, "media-mensal" : totalGasto/meses}});
+    return {"cota-parlamentar" : {"total-gasto" : totalGasto, "media-mensal" : totalGasto/meses}}
+  });
+}
+function compare(a, b) {
+  let aint = parseInt(a.zip);
+  let bint = parseInt(b.zip);
+    
+  if (aint > bint)
+      return -1;
+  if (aint < bint)
+      return 1;
+    return 0;
+  }
+  
 function obterVerbaGabinete(idDeputado, ano){
     //console.log(getURLVerbaGabinete(idDeputado,ano))
    proxyRequest(getURLVerbaGabinete(idDeputado,ano)).then(html =>{
@@ -71,7 +98,7 @@ function obterVerbaGabinete(idDeputado, ano){
     console.log(mes + valorDisponivel + valorTotal)
     console.log("Mes: " + mes.textContent.trim() + " Disp: " + valorDisponivel.textContent.trim() + " Total: " + valorTotal.textContent.trim())
 
-    ultima_verba = {"mes":mes.textContent, "disponivel":valorDisponivel.textContent.trim(), "gasto": valorTotal.textContent.trim()}
+    ultima_verba = {"verba-gabinete" : {"mes": mes.textContent, "disponivel":valorDisponivel.textContent.trim(), "gasto": valorTotal.textContent.trim()}}
     return ultima_verba
 });
 }
