@@ -1,3 +1,4 @@
+
 async function proxyRequest(url, headerType="application/html"){
     
     var headers = new Headers();
@@ -38,12 +39,24 @@ function getURLVerbaGabinete(idDep, year=currentYear){
     return "https://www.camara.leg.br/deputados/" + idDep + "/verba-gabinete?ano=" + year;
 }
 
+function obterNoticias(nomeDeputado, retorno){
+  console.log(nomeDeputado);
+  proxyRequest(getURLNoticiasDeputado(nomeDeputado)).then( txt => {
+    retorno = htmlToDOM(txt);
+  });
+  
+}
+
 function obterDespesas(idDeputado, ano=2019){
     
     obterCotaParlamentar(idDeputado, ano);
     
     //Working
     //let verbaGabinete = obterVerbaGabinete(idDeputado, ano); 
+}
+
+function getURLNoticiasDeputado(nomeDeputado){
+  return "https://news.google.com/rss/search?q=" + nomeDeputado + "&hl=pt-BR&gl=BR";
 }
 
 function formatNumber(str_number){
@@ -79,7 +92,6 @@ function compare(a, b) {
       return 1;
     return 0;
   }
-  
 function obterVerbaGabinete(idDeputado, ano){
     //console.log(getURLVerbaGabinete(idDeputado,ano))
    proxyRequest(getURLVerbaGabinete(idDeputado,ano)).then(html =>{
