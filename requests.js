@@ -4,6 +4,7 @@ async function proxyRequest(url, headerType="application/html"){
     var headers = new Headers();
     headers.append("Content-Type", headerType);
     
+    console.log(url);
     const res = await fetch("https://cors-anywhere.herokuapp.com/" + url, { headers });
     
     const retorno = await res.text();
@@ -39,12 +40,65 @@ function getURLVerbaGabinete(idDep, year=currentYear){
     return "https://www.camara.leg.br/deputados/" + idDep + "/verba-gabinete?ano=" + year;
 }
 
-function obterNoticias(nomeDeputado, retorno){
+async function obterNoticias(nomeDeputado){
   console.log(nomeDeputado);
-  proxyRequest(getURLNoticiasDeputado(nomeDeputado)).then( txt => {
-    retorno = htmlToDOM(txt);
+  return await proxyRequest(getURLNoticiasDeputado(nomeDeputado)).then(async txt => {
+    let r = htmlToDOM(txt);
+    let itens = r.getElementsByTagName('item');
+    
+    
+   
+    console.log(itens);
+    // await itens.forEach(i => (async(retorno) =>{
+    //   retorno.push(
+    //         { 'titulo': i.firstElementChild.textContent,
+    //           'fonte' :i.lastElementChild.textContent,
+    //           'link' : i.lastElementChild.getAttribute('url'),
+    //           'data' : formatDate(i.lastElementChild.previousElementSibling.previousElementSibling.textContent)
+    //       });
+    // }));
+    let x;
+    async function a (itens) {
+      i = 0;
+      let retorno = [] ;
+     
+
+      for(i = 0; i< 5; i++){
+        let titulo =  itens[i].firstElementChild.textContent;
+
+        if(titulo.length > 75){
+          titulo = titulo.substring(0, 72)
+          titulo += '...'
+        }
+        
+        console.log(itens[i].firstElementChild);
+        retorno.push(
+          { 'titulo': titulo,
+            'descricao': itens[i].firstElementChild.textContent,
+            'fonte' : itens[i].firstElementChild.textContent.split(" - ")[1],
+            'link' : itens[i].lastElementChild.previousElementSibling.textContent.split('"')[1],
+            'data' : formatDate(itens[i].lastElementChild.previousElementSibling.previousElementSibling.textContent)
+          });
+          
+        }
+      
+        return retorno;
+    }
+    const f = await a(itens);
+
+    return  f;
+   
   });
-  
+}
+
+function calculateAge(birthday) { 
+  var ageDifMs = Date.now() - new Date(birthday).getTime();
+  var ageDate = new Date(ageDifMs); // miliseconds from epoch
+  return Math.abs(ageDate.getUTCFullYear() - 1970);
+}
+function formatDate(str_date){
+  let date  =  new Date(str_date);
+  return date.toLocaleDateString();
 }
 
 function obterDespesas(idDeputado, ano=2019){
@@ -56,7 +110,8 @@ function obterDespesas(idDeputado, ano=2019){
 }
 
 function getURLNoticiasDeputado(nomeDeputado){
-  return "https://news.google.com/rss/search?q=" + nomeDeputado + "&hl=pt-BR&gl=BR";
+  
+  return "https://news.google.com/rss/search?q=" + nomeDeputado.replace(" ", "+") + "&hl=pt-BR&gl=BR";
 }
 
 function formatNumber(str_number){

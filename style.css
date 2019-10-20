@@ -74,3 +74,24 @@ span{
   table{
     margin-top: 5px;
   }
+
+  b{
+      color: darkslategrey;
+  }
+  
+  #social{
+      font-size: 22px;
+  }
+
+#social:hover{
+    color: black;
+    cursor: pointer;
+
+}
+
+.social-link{
+    text-decoration: none;
+}
+.social-link:hover{
+    text-decoration: none;
+}

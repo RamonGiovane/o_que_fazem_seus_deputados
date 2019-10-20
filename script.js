@@ -22,12 +22,15 @@ btn_pesquisar.onclick = function (){
 
 const url_base = 'https://dadosabertos.camara.leg.br/api/v2/deputados/'
 
-request(url_base)
-  .then(data => listarDeputados(data))
+//request(url_base)
+  //.then(data => listarDeputados(data))
+  let data1 = data[0]
+
+  listarDeputados(data);
 
 function listarDeputados(json_data) {
     
-    data = json_data.dados;
+    data = json_data
     
     //Copiando para a variavel global
     data_json = data;
@@ -39,8 +42,8 @@ function listarDeputados(json_data) {
     
     for (let i = 0; i < data.length; i++) 
     {
-      
-      //despesas[data[i].id] = obterDespesas(data[i].id)
+      let dep = data[i]['ultimoStatus']
+      //despesas[dep.id] = obterDespesas(dep.id)
 
       let card = document.createElement("div");
       let cardBody = document.createElement("div");
@@ -58,11 +61,11 @@ function listarDeputados(json_data) {
       padding: 20px;`;
     
       //Definindo ponteiro do mouse
-      card.style.cursor = "pointer";
+      //card.style.cursor = "arrow";
 
       //Povoando o cartão
-      nome.innerHTML = "<h6>" + data[i].nome; + "</h6>"
-      partido.innerHTML = data[i].siglaPartido + '-' + data[i].siglaUf + '<i class="fa fa-caret-down"></i>';
+      nome.innerHTML = "<h6>" + dep.nomeEleitoral; + "</h6>"
+      partido.innerHTML = dep.siglaPartido + '-' + dep.siglaUf + '<i class="fa fa-caret-down"></i>';
     
       //Tratando eventos de mouse
       nome.addEventListener("pointerenter", previewDeputado);
@@ -93,124 +96,128 @@ function listarDeputados(json_data) {
       div.id = "cartao" + elm.id;
       
       //Recupera um deputado do JSON com a lista de deputados a partir do ID definido no HTML
+    
       let dep = data_json[parseInt(elm.id)];
 
-      console.log(dep.id)
       
       //obterDespesas(dep.id);
-      let noticias; 
-      obterNoticias(dep.nome, noticias);
-
-      //img style="width: 114px; height: 152px;" 
-      div.innerHTML = 
-              
+      //let noticias = []; 
+      
+      obterNoticias('Política+' + dep.ultimoStatus.nomeEleitoral).then(noticias =>  {
+        
+        console.log(noticias);
+        renderizarDeuputado(noticias, despesas, dep, div);
+      
+      });
+    }
+     
+    function renderizarDeuputado(noticias, despesas, dep, div) {
+    //img style="width: 114px; height: 152px;" 
+        div.innerHTML = 
                 
-                // '<div class="card" style="width: 114px;">' +
-                //   '<img class="card-img-top" width: 114px; height: 152px;" src="' + dep.urlFoto + '"></img>' +
-                //   'Nome completo: ' +  dep.nome + '<br>' +
-                //   'Partido: ' + dep.siglaPartido + ' (' + dep.siglaUf + ')<br>' +
-                //   'Email: <a class="card-link" href="mailto:' + dep.email +  '">' + dep.email  + 
-                // '</div>';
-              
-              
-                `
-              <br>
-              <div style="cursor: pointer"> 
-                <div class="card" style="width: 21rem; display: inline-block; ">
-                  <img src="`+ dep.urlFoto +`" class="card-img-top" alt="...">
-                  <div class="card-body">
-                    <h5 class="card-title" style="margin-bottom:  25px; margin-top:  -7px;">Conheça</h5>
-                    <span class="card-text">
-                    Nome: ` +  dep.nome + `<br>
-                    Partido: ` + dep.siglaPartido + ` (`+ dep.siglaUf + `)<br>
+                //Conheça
+                  `
+                <br>
+                <div style="cursor: arrow; display: inline-block;"> 
+                  <div class="card" style="width: 24rem; display: inline-block; ">
+                    <img src="`+ dep.ultimoStatus.urlFoto +`" class="card-img-top" alt="...">
+                    <div class="card-body">
+                      <h5 class="card-title" style="margin-bottom:  25px; margin-top:  -7px;">Conheça</h5>
+                      <span class="card-text">
+                      <b>Nome</b>: ` +  dep.nomeCivil + `<br>
+                      <b>Partido</b>: ` + dep.ultimoStatus.siglaPartido + ` (`+ dep.ultimoStatus.siglaUf + `)<br>
+                      <br>
+                      <b>Idade</b>: ` + calculateAge(dep.dataNascimento) + ` anos<br>
+                      <b>Natural de</b>: ` + dep.municipioNascimento + ` (`+ dep.ufNascimento + `)<br>
+                      <b>Escolaridade</b>: ` + dep.escolaridade  + ` <br>
+                      <b>Status do Mandato</b>: <p style="display: inline; color: gold; background-color: darkblue; border-radius: 3px; font-weigth: bold">` +  dep.ultimoStatus.situacao + ` </p>
+                      <br>
+                      <br>
+                      <a class="card-link" href="https://www.camara.leg.br/deputados/` + dep.ultimoStatus.id  + `/biografia">Mais Informações</a> 
+                      </span>
+                    </div>
+                  </div>` 
+                
+                  //Informe-se
+                 var html_str =
+                  `
+                  <div style="display: inline-block; margin-left: 20px; vertical-align:top; ">
+                    <div class="card" style="width: 35rem; display: inline-block;">
+                      <h5 class="card-title" style="margin: 5px 12px;">Informe-se</h5>
+                      
+                      <div class="list-group">
+                      `
+                      console.log(div.innerHTML)
+                        //inserindo as notícias
+                        for( i = 0; i<noticias.length; i++){
+                          let n = noticias[i];
+                          console.log(n.link)
+                          html_str +=
+                          `<a href="` + n.link + `" class="list-group-item list-group-item-action flex-column align-items-start">
+                            <div class="d-flex w-10 justify-content-between" >
+                               <h5 class="mb-0">` + n.titulo + `</h5>
+                               <small>` + n.data + `</small>
+                            </div>
+                              <p class="mb-1">` + n.descricao   + `.</p>
+                              <small>` + n.fonte + `</small>
+                          </a>`
+                        }
+                        div.innerHTML += html_str +   
+                      `
+                      </div>   
+                    </div>
+                    </div>
+                  </div>` ;
+                  let gabinete = dep.ultimoStatus.gabinete;
+                  str_html = 
+                    `
+                  <br><br>
+                  <div class="card" style="width: 24rem; display: inline-block; margin-bottom: -5px">
+                    <div style="margin-left: 12px">
+                    <h5 class="card-title" style="margin-bottom:  25px;  margin: 12px 0px; ">Cobre</h5>
+                    <h6 class="card-text">Entre em contato</h6>
+                    <b>Gabinete: </b>` + gabinete.nome + ` Prédio: ` +  gabinete.predio + ` - ` +
+                  
+                    gabinete.andar + `º andar - Sala: ` + gabinete.sala +
+                    `<br>
+                    <b>Telefone:</b> ` + gabinete.telefone +
+
+                    `<br><br>
+                    <a href=mailto:`+gabinete.email + `>Enviar um email</a>
+                    <br><br>
+                    </div>`;
+
                     
-                    <br>
-                    <a class="card-link" href="https://www.camara.leg.br/deputados/` + dep.id  + `/biografia">Mais Informações</a> 
-                    </span>
-                  </div>
-                </div>
-                <div style="display: inline-block; margin-left: 20px">
-                  <div class="card" style="width: 35rem; display:  block; margin-botto: -5px">
-                    <h5 class="card-title" style="margin: 5px 12px;">Monitore</h5>
+                    for(index = 0; index < dep.redeSocial.length; index++){
+                      let i = dep.redeSocial[index]
+                      console.log("i porra" + i)
+                      if(i.includes("instagram.com"))
+                        str_html += '<a class=social-link href='+ i + '><i id="social" class="fa fa-instagram"></i></a>'
+                      if(i.includes("facebook.com"))
+                        str_html +=   '<a class=social-link href='+ i + '> <i id="social" class="fa fa-facebook-f"></i></a>'
+                      if(i.includes("youtube.com"))
+                        str_html +=  '<a class=social-link href='+ i + '> <i id="social" class="fa fa-youtube"></i></a>'
+                      if(i.includes("twitter.com"))
+                        str_html +=  '<a class=social-link href='+ i + '> <i id="social" class="fa fa-twitter"></i></a>'
                     
-                    <div class="list-group">
-                      <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-                        <div class="d-flex w-100 justify-content-between">
-                          <h5 class="mb-1">List group item heading</h5>
-                          <small>3 days ago</small>
-                        </div>
-                        <p class="mb-1">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
-                        <small>Donec id elit non mi porta.</small>
-                      </a>
-                      <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-                        <div class="d-flex w-100 justify-content-between">
-                          <h5 class="mb-1">List group item heading</h5>
-                          <small class="text-muted">3 days ago</small>
-                        </div>
-                        <p class="mb-1">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
-                        <small class="text-muted">Donec id elit non mi porta.</small>
-                      </a>
-                      <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-                        <div class="d-flex w-100 justify-content-between">
-                          <h5 class="mb-1">List group item heading</h5>
-                          <small class="text-muted">3 days ago</small>
-                        </div>
-                        <p class="mb-1">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
-                        <small class="text-muted">Donec id elit non mi porta.</small>
-                      </a>
-                </div>
-                  </div>
-                  <br>
-                  <div class="card" style="width: 35rem; display: block; margin-bottom:">
-                  <h5 class="card-title" style="margin-bottom:  25px; margin-top:  -7px;">Monitore</h5>
-                  <p class="card-text">Lorem fodase Lorem fodasLorem fodasLorem fodasLorem fodasLorem fodasLorem fodasLorem fodasLorem fodas </p>
+                    }
+                  str_html +=
+                  `</div>
+                  <div class="card" style="width: 35rem; display: inline-block; margin-bottom:">
+                    <h5 class="card-title" style="margin-bottom:  25px; margin: 5px 12px;">Monitore</h5>
+                    <p class="card-text">Lorem fodase Lorem fodasLorem fodasLorem fodasLorem fodasLorem fodasLorem fodasLorem fodasLorem fodas </p>
                   </div>
                 </div>
+                `;
+                console.log(str_html)
+                div.innerHTML += str_html;
+          
 
-              </div>
-              `;
-                  
-              //   '<td><div id="span_info" class="card-text">' +
-              //   '<h5 class="card-tile">Conheça</h5>' +
-                  
-              //   '</div></td>'+ 
-              //   '</table>' +
-              //   //'<tr><td>' + 
-              //     '<div class="card" style="width: 18rem">' +
-              //       '<h5 class="card-tile">Últimas notícias</h5>' +
-              //       '<p class="card-text">Teste teste</p>' +
-              //     '</div>';
-              //   //'</td></tr>' +
-              // //'</table>';
-      //  div.innerHTML += 
-      //         '<br>' +
-      //         '<table>' +
-                
-      //           '<tr class="card" style="width: 18 rem; height: 2 rem;">' +
-                
-      //           '<td>' +
-      //             '<img class="card-img-top" src="' + dep.urlFoto + '"></img>' +
-                  
-      //           '</td>' +
-                  
-      //           '<td><div id="span_info" class="card-text">' +
-      //           '<h5 class="card-tile">Conheça</h5>' +
-      //             'Nome completo: ' +  dep.nome + '<br>' +
-      //             'Partido: ' + dep.siglaPartido + ' (' + dep.siglaUf + ')<br>' +
-      //             'Email: <a class="card-link" href="mailto:' + dep.email +  '">' + dep.email  + 
-      //           '</div></td>'+ 
-      //           '</table>' +
-      //           //'<tr><td>' + 
-      //             '<div class="card" style="width: 18rem">' +
-      //               '<h5 class="card-tile">Últimas notícias</h5>' +
-      //               '<p class="card-text">Teste teste</p>' +
-      //             '</div>';
-      //           //'</td></tr>' +
-      //         //'</table>';
-
-      tagDeputado = div;
-      elm.appendChild(div);
-    
+        tagDeputado = div;
+        elm.appendChild(div);
+        window.scrollBy(0, -15);
+        
+                   
     }
 
     function setarDespesas(data_html){
