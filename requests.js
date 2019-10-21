@@ -1,4 +1,6 @@
 
+let noticias_cache = []
+
 async function proxyRequest(url, headerType="application/html"){
     
     var headers = new Headers();
@@ -41,7 +43,10 @@ function getURLVerbaGabinete(idDep, year=currentYear){
 }
 
 async function obterNoticias(nomeDeputado){
-  console.log(nomeDeputado);
+  
+  //Consulta o cache
+  if(nomeDeputado in noticias_cache) return noticias_cache[nomeDeputado];
+
   return await proxyRequest(getURLNoticiasDeputado(nomeDeputado)).then(async txt => {
     let r = htmlToDOM(txt);
     let itens = r.getElementsByTagName('item');
@@ -49,15 +54,7 @@ async function obterNoticias(nomeDeputado){
     
    
     console.log(itens);
-    // await itens.forEach(i => (async(retorno) =>{
-    //   retorno.push(
-    //         { 'titulo': i.firstElementChild.textContent,
-    //           'fonte' :i.lastElementChild.textContent,
-    //           'link' : i.lastElementChild.getAttribute('url'),
-    //           'data' : formatDate(i.lastElementChild.previousElementSibling.previousElementSibling.textContent)
-    //       });
-    // }));
-    let x;
+
     async function a (itens) {
       i = 0;
       let retorno = [] ;
@@ -81,7 +78,7 @@ async function obterNoticias(nomeDeputado){
           });
           
         }
-      
+        noticias_cache[nomeDeputado] = retorno;
         return retorno;
     }
     const f = await a(itens);

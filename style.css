@@ -88,6 +88,17 @@ span{
     cursor: pointer;
 
 }
+.nome_partido{
+    padding-bottom: 3px;
+}
+.nome_partido:hover{
+    color: #0077bf;
+    cursor: pointer;
+}
+.nome_deputado:hover{
+    color: #0077bf;
+    cursor: pointer;
+}
 
 .social-link{
     text-decoration: none;

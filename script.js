@@ -16,20 +16,27 @@ let data_json; //deverá ser renomeado depois para lista_dep_json;
 
 let despesas; //deverá ser renomeado depois para despesas_dep_xml;
 
+let cache_dep_html = []; //Guarda em cache conteúdo HTML das informações de um deputado ja pesquisado
+
+
 btn_pesquisar.onclick = function (){
-    //alert("oi");
+  listarDeputados(data.filter(function(data) {
+    return data.ultimoStatus['nomeEleitoral'].includes(campo_de_pesquisa.textContent) 
+    || data.ultimoStatus['siglaPartido'].includes(campo_de_pesquisa.textContent) ||
+    data.ultimoStatus['siglaUf'].includes(campo_de_pesquisa.textContent)
+  }))
+
 }
 
 const url_base = 'https://dadosabertos.camara.leg.br/api/v2/deputados/'
 
-//request(url_base)
-  //.then(data => listarDeputados(data))
-  let data1 = data[0]
+listarDeputados(data);
 
-  listarDeputados(data);
+
+
 
 function listarDeputados(json_data) {
-    
+
     data = json_data
     
     //Copiando para a variavel global
@@ -105,19 +112,18 @@ function listarDeputados(json_data) {
       
       obterNoticias('Política+' + dep.ultimoStatus.nomeEleitoral).then(noticias =>  {
         
-        console.log(noticias);
         renderizarDeuputado(noticias, despesas, dep, div);
-      
       });
     }
-     
+    
+
     function renderizarDeuputado(noticias, despesas, dep, div) {
-    //img style="width: 114px; height: 152px;" 
+    
+        
+         
         div.innerHTML = 
-                
                 //Conheça
-                  `
-                <br>
+                `<br>
                 <div style="cursor: arrow; display: inline-block;"> 
                   <div class="card" style="width: 24rem; display: inline-block; ">
                     <img src="`+ dep.ultimoStatus.urlFoto +`" class="card-img-top" alt="...">
@@ -180,7 +186,7 @@ function listarDeputados(json_data) {
                   
                     gabinete.andar + `º andar - Sala: ` + gabinete.sala +
                     `<br>
-                    <b>Telefone:</b> ` + gabinete.telefone +
+                    <b>Telefone: </b>(61) ` + gabinete.telefone +
 
                     `<br><br>
                     <a href=mailto:`+gabinete.email + `>Enviar um email</a>
@@ -203,14 +209,17 @@ function listarDeputados(json_data) {
                     }
                   str_html +=
                   `</div>
-                  <div class="card" style="width: 35rem; display: inline-block; margin-bottom:">
+                  <div class="card" style="width: 35rem; display: inline-block; vertical-align:top; margin-bottom:">
                     <h5 class="card-title" style="margin-bottom:  25px; margin: 5px 12px;">Monitore</h5>
-                    <p class="card-text">Lorem fodase Lorem fodasLorem fodasLorem fodasLorem fodasLorem fodasLorem fodasLorem fodasLorem fodas </p>
+                    <p class="card-text">Lorem ipsume Lorem ipsumLorem ipsumLorem ipsumLorem ipsumLorem ipsumLorem ipsumLorem ipsumLorem ipsum </p>
                   </div>
                 </div>
                 `;
                 console.log(str_html)
                 div.innerHTML += str_html;
+                
+                //Armazenando em cache
+                cache_dep_html[dep.id] = div.innerHTML;
           
 
         tagDeputado = div;
